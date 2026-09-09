@@ -4,13 +4,10 @@ on:
   release:
     types: [published]
 
-permissions:
-  contents: write
-  id-token: write
-
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -21,6 +18,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
           python -m build
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-dist
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Download package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-dist
+          path: dist
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
