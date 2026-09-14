@@ -28,7 +28,8 @@ jobs:
   publish-pypi:
     needs: build
     runs-on: ubuntu-latest
-    permissions: {}
+    permissions:
+      id-token: write
     steps:
       - name: Download package artifacts
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
@@ -37,9 +38,6 @@ jobs:
           path: dist
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
 
   attach-release-assets:
     needs: [build, publish-pypi]
